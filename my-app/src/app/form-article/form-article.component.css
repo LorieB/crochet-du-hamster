@@ -1,0 +1,16 @@
+form {
+    margin-top: 1rem;
+}
+
+legend {
+    font-size: 1rem;
+}
+
+.form-group {
+    margin-bottom: 2rem;
+}
+
+
+img {
+    height: max-content;
+}

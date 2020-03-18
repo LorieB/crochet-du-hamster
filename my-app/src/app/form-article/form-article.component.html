@@ -1,0 +1,100 @@
+<form [formGroup]="articleForm" (ngSubmit)="onSubmit()" enctype="multipart/form-data">
+    <div class="row">
+        <!-- Titre / Date / Texte -->
+        <div class="col-md">
+            <!-- Titre -->
+            <div class="form-group">
+                <label for="titre">Titre</label>
+                <input type="text" id="titre" formControlName="titre" class="form-control">
+            </div>
+            <!-- Date creation -->
+            <div class="form-group">
+                <label for="date">Date de création</label>
+                <input type="date" id="date" formControlName="dateCreation" class="form-control">
+            </div>
+            <!-- Texte -->
+            <div class="form-group">
+                <label for="texte">Texte</label>
+                <textarea id="texte" formControlName="texte" class="form-control" rows="11"></textarea>
+            </div>
+        </div>
+        <!-- Matières / Categories / Porte clef / Disponibilité / Prix -->
+        <div class="col-md">
+            <!-- Matières -->
+            <div class="form-group">
+                <label for="matiere">Matière</label>
+                <select multiple id="matiere" formControlName="matiere" class="form-control">
+                    <option *ngFor="let mat of matieres" value="{{mat.id}}">{{mat.nom}}</option>
+                </select>
+            </div>
+            <!-- Categories -->
+            <div class="form-group">
+                <label for="categorie">Categorie</label>
+                <select id="categorie" formControlName="categorie" class="form-control">
+                    <option *ngFor="let cat of categories" value="{{cat.id}}">{{cat.nom}}</option>
+                </select>
+            </div>
+            <!-- Porte clef -->
+            <div class="form-group">
+                <div class="custom-control custom-switch">
+                    <input type="checkbox" formControlName="porteClef" class="custom-control-input" value=""
+                        id="porteClef">
+                    <label class="custom-control-label" for="porteClef">Porte clef</label>
+                </div>
+            </div>
+            <!-- Disponibilité -->
+            <fieldset class="form-group">
+                <legend>Disponible</legend>
+                <div class="custom-control custom-radio custom-control-inline">
+                    <input type="radio" formControlName="dispo" class="custom-control-input" name="dispo" id="dispoOui"
+                        value="1">
+                    <label class="custom-control-label" for="dispoOui">Oui</label>
+                </div>
+                <div class="custom-control custom-radio custom-control-inline">
+                    <input type="radio" formControlName="dispo" class="custom-control-input" name="dispo" id="dispoNon"
+                        value="2">
+                    <label class="custom-control-label" for="dispoNon">Non</label>
+                </div>
+                <div class="custom-control custom-radio custom-control-inline">
+                    <input type="radio" formControlName="dispo" class="custom-control-input" name="dispo"
+                        id="dispoCommande" value="3">
+                    <label class="custom-control-label" for="dispoCommande">Sur commande</label>
+                </div>
+            </fieldset>
+            <!-- Prix -->
+            <div class="form-group">
+                <label for="prix">Prix</label>
+                <div class="input-group">
+                    <input type="number" formControlName="prix" id="prix" class="form-control"
+                        aria-describedby="basic-addon2">
+                    <div class="input-group-append">
+                        <span class="input-group-text" id="basic-addon2">€</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Images / Description images -->
+        <div class="col-md">
+                <div class="form-group ">
+                    <label>Images</label>
+                    <div class="custom-file">
+                        <input (change)="detectFiles($event)" type="file" multiple class="custom-file-input"
+                            id="images">
+                        <label class="custom-file-label" for="images"></label>
+                    </div>
+                </div>
+                <div formArrayName="imagesBDD" *ngFor="let image of images; let i = index;">
+                    <div [formGroupName]="i" class="form-group row">
+                        <img [src]="image" class="col-4">
+                        <div class="col-8">
+                            <input type="text" readonly class="form-control-plaintext" formControlName="nomImg" hidden>
+                            <textarea formControlName="descriptionImg" class="form-control"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <button type="submit" [disabled]="!articleForm.valid" class="btn btn-outline-dark btn-lg ">Valider</button>
+        </div>
+</form>

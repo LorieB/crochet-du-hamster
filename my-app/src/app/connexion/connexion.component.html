@@ -1,0 +1,17 @@
+<app-toaster-container></app-toaster-container>
+<div class="card col-4 offset-4">
+    <div class="card-body">
+        <form (ngSubmit)="onSubmit()" [formGroup]="connexionForm" class="form-signin">
+            <div class="form-group">
+                <label for="nom">Nom</label>
+                <input type="text" class="form-control" id="nom" formControlName="nom" required>
+            </div>
+            <div class="form-group">
+                <label for="mdp">Mot de passe</label>
+                <input type="password" class="form-control" id="mdp" formControlName="mdp" required>
+            </div>
+
+            <button type="submit" class="btn btn-dark" [disabled]="connexionForm.invalid">Connexion</button>
+        </form>
+    </div>
+</div>

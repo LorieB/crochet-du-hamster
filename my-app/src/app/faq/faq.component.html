@@ -1,0 +1,13 @@
+<div *ngFor="let question of questions; let i = index" class="card border-secondary mb-4">
+    <a data-toggle="collapse" href="#question{{i}}" role="button" aria-expanded="false" aria-controls="collapseExample" class="text-dark">
+        <div class="card-header">{{question.quest}}</div>
+    </a>
+    <div class="collapse" id="question{{i}}">
+        <div class="card-body">
+            <p class="card-text">
+                {{question.rep}}
+            </p>
+        </div>
+    </div>
+</div>
+

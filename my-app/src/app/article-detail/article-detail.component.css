@@ -1,0 +1,24 @@
+.carousel-indicators li {
+    box-sizing: inherit;
+    text-indent: inherit;
+    width: 7em;
+}
+
+.carousel-indicators {
+    position: inherit;
+    height: 7em;
+    margin-bottom: 0;
+}
+
+.fixed-top {
+    top: 2em;
+    left: 16em;
+}
+
+label{
+    font-weight: bold;
+}
+
+p{
+    white-space: pre-line;
+}
