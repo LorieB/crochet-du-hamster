@@ -4,26 +4,31 @@ var fs = require('fs-extra');       //File System - for file manipulation
 const express = require("express");
 
 module.exports = function (app, connectionBDD) {
-    const dossier = 'C:/Users/Moi/my-app/src/assets/images';
+    const dossier = '/assets/images';
     app.use(busboy());
     app.use(express.static(path.join(dossier, 'public')));
 
     /*
-    Se connecte a la BDD pour récupérer la liste des articles ainsi que les url des images associées et leurs descriptions
-    Parcour le résultat pour transformer en tableau les listes d'images et de descriptions 
+    Récupére la liste des articles ainsi que les url des images associées et leurs descriptions
+    Parcour le résultat pour transformer en tableau les listes d'images, descriptions, matières et matières id
     */
     app.get("/articles", function (request, response) {
         connectionBDD.query(
-            'SELECT article.id, titre, texte, prix, dateCreation, GROUP_CONCAT(url ORDER BY url) AS image, GROUP_CONCAT(description) AS descriptionImg FROM article ' +
-            'INNER JOIN art_img ON article.id = art_img.fk_id_art ' +
-            'INNER JOIN image ON art_img.fk_id_img = image.id ' +
+            'SELECT article.id, categorie.id AS categorieID, GROUP_CONCAT(DISTINCT matiere.id) AS matiereID, titre, texte, prix, DATE_FORMAT(dateCreation, "%Y-%m-%d") AS dateCreation, porteClef, dispo, categorie.nom AS categorie, GROUP_CONCAT(DISTINCT matiere.nom) AS matiere, GROUP_CONCAT(DISTINCT image.nom  ORDER BY image.nom)AS image, GROUP_CONCAT(DISTINCT description SEPARATOR "|") AS descriptionImg ' +
+            'FROM article ' +
+            'INNER JOIN image ON article.id = image.id_article ' +
+            'INNER JOIN categorie ON article.id_categorie = categorie.id ' +
+            'INNER JOIN art_mat ON article.id = art_mat.fk_id_art ' +
+            'INNER JOIN matiere ON matiere.id = fk_id_mat ' +
             'GROUP BY article.id ' +
-            'ORDER BY dateCreation DESC ;',
+            'ORDER BY article.dateCreation DESC ;',
             function (err, rows) {
                 if (err) throw err;
                 rows.forEach(article => {
+                    article.matiere = article.matiere.split(",");
+                    article.matiereID = article.matiereID.split(",");
                     article.image = article.image.split(",");
-                    article.descriptionImg = article.descriptionImg.split(",");
+                    article.descriptionImg = article.descriptionImg.split("|");
                 });
                 response.send(rows);
             });
@@ -34,15 +39,14 @@ module.exports = function (app, connectionBDD) {
     Transforme en tableau les listes de matières, images et descriptions 
     */
     app.get("/articles/:id", function (request, response) {
-        sql = 'SELECT article.id, titre, texte, prix, porteClef, dispo, categorie.nom AS categorie, GROUP_CONCAT(DISTINCT matiere.nom) AS matiere, GROUP_CONCAT(DISTINCT url  ORDER BY url)AS image, GROUP_CONCAT(DISTINCT description SEPARATOR "|") AS descriptionImg ' +
+        sql = 'SELECT article.id, titre, texte, prix, porteClef, dispo, categorie.nom AS categorie, GROUP_CONCAT(DISTINCT matiere.nom) AS matiere, GROUP_CONCAT(DISTINCT image.nom  ORDER BY image.nom)AS image, GROUP_CONCAT(DISTINCT description SEPARATOR "|") AS descriptionImg ' +
             'FROM article ' +
-            'INNER JOIN art_img ON article.id = art_img.fk_id_art ' +
-            'INNER JOIN image ON art_img.fk_id_img = image.id ' +
+            'INNER JOIN image ON article.id = image.id_article ' +
             'INNER JOIN categorie ON article.id_categorie = categorie.id ' +
             'INNER JOIN art_mat ON article.id = art_mat.fk_id_art ' +
             'INNER JOIN matiere ON matiere.id = fk_id_mat ' +
             'WHERE article.id = ' + request.params.id + ';';
-            
+
         connectionBDD.query(sql, function (err, rows) {
             if (err) throw err;
             rows[0].matiere = rows[0].matiere.split(",");
@@ -64,6 +68,7 @@ module.exports = function (app, connectionBDD) {
         });
     });
 
+    /* Récupère la liste des categories, matières et leurs id */
     app.get("/matCat", function (request, response) {
         connectionBDD.query(
             'SELECT id, nom FROM matiere;' +
@@ -75,51 +80,31 @@ module.exports = function (app, connectionBDD) {
         )
     });
 
+    /* Insère un nouvel article en BDD */
     app.post("/ajout", function (request, response) {
         let idArticle;
-        let idImg = [];
-        let baseUrl = "../assets/images/";
 
         let sql = `INSERT INTO article (titre, texte, prix, dateCreation, porteClef, dispo, id_categorie) VALUES ("${request.body.titre}", "${request.body.texte}", ${request.body.prix}, "${request.body.dateCreation}", ${request.body.porteClef}, ${request.body.dispo}, "${request.body.categorie}"); ` + //ajoute le nouvel article
-            `SELECT id FROM article WHERE titre = "${request.body.titre}" AND texte = "${request.body.texte}"; ` + // récupère l'id de l'article pour les requetes suivantes
-            `INSERT INTO image (nom, url, description) VALUES `;  //ajoute les nouvelles images
-        for (let img of request.body.imagesBDD) {
-            sql += `("${img.nomImg}", "${baseUrl}${img.nomImg}", "${img.descriptionImg}"),`;
-        }
-        //supprime la virgule en trop
-        sql = sql.slice(0, sql.length - 1);
-        sql += `; ` +
-            `SELECT id FROM image WHERE `; //récupère les id des nouvelles images pour les requettes suivantes
-        for (let img of request.body.imagesBDD) {
-            sql += `url = "${baseUrl}${img.nomImg}" OR `;
-        }
-        //supprime le OR en trop
-        sql = sql.slice(0, sql.length - 3);
-        sql += `;`;
+            `SELECT id FROM article WHERE titre = "${request.body.titre}" AND texte = "${request.body.texte}"; ` // récupère l'id de l'article pour les requetes suivantes
 
         connectionBDD.query(sql,
             function (err, rows) {
                 if (err) throw err;
                 idArticle = rows[1][0].id;
-                idImg = rows[3];
 
-
-                sql2 = "INSERT INTO art_mat (fk_id_art, fk_id_mat) VALUES ";
+                sql2 = "INSERT INTO art_mat (fk_id_art, fk_id_mat) VALUES "; //ajoute les liens entre articles et matières
                 for (let mat of request.body.matiere) {
-                    sql2 += "(" + idArticle + "," + mat + "),";
+                    sql2 += `( ${idArticle} , ${mat} ),`;
                 }
-                //supprime la virgule en trop
-                sql2 = sql2.slice(0, sql2.length - 1);
-                sql2 += ";";
+                sql2 = sql2.slice(0, sql2.length - 1);//supprime la virgule en trop
+                sql2 += "; ";
 
-                sql2 += "INSERT INTO art_img (fk_id_art, fk_id_img) VALUES ";
-                for (let img of idImg) {
-                    sql2 += "(" + idArticle + "," + img.id + "),"
+                sql2 += `INSERT INTO image (nom, description, id_article) VALUES `;  //ajoute les nouvelles images
+                for (let img of request.body.imagesBDD) {
+                    sql2 += `("${img.nomImg}", "${img.descriptionImg}", ${idArticle}),`;
                 }
-                //supprime la virgule en trop
-                sql2 = sql2.slice(0, sql2.length - 1);
-                sql2 += ";";
-
+                sql2 = sql2.slice(0, sql2.length - 1); //supprime la virgule en trop
+                sql2 += `; ` ;
 
                 connectionBDD.query(sql2,
                     function (err, rows) {
@@ -144,17 +129,57 @@ module.exports = function (app, connectionBDD) {
     });
 
 
+    /* Modifie un article */
+    app.post("/modif/:id", function (request, response) {
+        let sql = 
+            `UPDATE article SET titre = '${request.body.titre}', texte = '${request.body.texte}', prix = ${request.body.prix}, dateCreation = '${request.body.dateCreation}', porteClef = ${request.body.porteClef}, dispo = ${request.body.dispo}, id_categorie = ${request.body.categorie} WHERE id = ${request.params.id};
+            DELETE FROM art_mat WHERE fk_id_art = ${request.params.id};
+            INSERT INTO art_mat (fk_id_art, fk_id_mat) VALUES 
+            `;
+        for (let mat of request.body.matiere) {
+            sql += `( ${request.params.id} , ${mat} ),`;
+        }
+        sql = sql.slice(0, sql.length - 1);//supprime la virgule en trop
+        sql += ";";
+
+        //ajoute les nouvelles images si présentes
+        if (request.body.imagesBDD.length > 0) {
+            sql += `INSERT INTO image (nom, description, id_article) VALUES `;  //ajoute les nouvelles images
+            for (let img of request.body.imagesBDD) {
+                sql += `("${img.nomImg}", "${img.descriptionImg}", ${request.params.id}),`;
+            }
+            sql = sql.slice(0, sql.length - 1); //supprime la virgule en trop
+            sql += `; ` ;
+        }
+        //supprime les images selectionnées
+        if (request.body.imagesSuppr.length > 0) {
+            deleteImg(request.body.imagesSuppr);
+
+            sql += `DELETE FROM image WHERE `;
+            for(let img of request.body.imagesSuppr){
+                sql += `nom = "${img}" OR `;
+            }
+            sql = sql.slice(0, sql.length - 3); //supprime le OR en trop
+            sql += `; ` ;
+        }
+
+        connectionBDD.query(sql, function (err, rows) {
+            if (err) throw err;
+            response.json('Modification réussi');
+        })
+    })
+
+
+    /* Supprime un article */
     app.get("/suppr/:id", function (request, response) {
-        connectionBDD.query(
-            'SELECT image.nom FROM image INNER JOIN art_img ON id = fk_id_img WHERE fk_id_art = ' + request.params.id + ';' +
-            'DELETE FROM image WHERE id IN (SELECT art_img.fk_id_img FROM art_img WHERE art_img.fk_id_art = ' + request.params.id + ');' +
+        let sql = 
+            'SELECT GROUP_CONCAT(DISTINCT image.nom)AS img FROM image WHERE id_article = ' + request.params.id + ';' + //récupère les nom des images pour les supprimer du dossier d'images
+            'DELETE FROM image WHERE id_article = ' + request.params.id + ';' +
             'DELETE FROM article WHERE id = ' + request.params.id + ';' +
-            'DELETE FROM art_mat WHERE fk_id_art = ' + request.params.id + ';' +
-            'DELETE FROM art_img WHERE fk_id_art = ' + request.params.id + ';'
-            ,
-            function (err, rows) {
+            'DELETE FROM art_mat WHERE fk_id_art = ' + request.params.id + ';'
+        connectionBDD.query(sql, function (err, rows) {
                 if (err) throw err;
-                deleteImg(rows[0]);
+                deleteImg(rows[0][0].img.split(",")); //formate le résultat de la requete sous la forme d'un tableau de nom d'images
                 response.json('Suppresion réussi');
             });
     })
@@ -162,10 +187,10 @@ module.exports = function (app, connectionBDD) {
     async function deleteImg(images) {
         try {
             for (let img of images) {
-                await fs.remove(dossier + "/" + img.nom)
+                await fs.remove(dossier + "/" + img);
             }
         } catch (err) {
-            console.error(err) 
+            console.error(err)
         }
     }
 

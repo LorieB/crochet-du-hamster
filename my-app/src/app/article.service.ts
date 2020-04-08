@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../environments/environment';
 
 import { Article } from './article';
  
@@ -8,27 +9,29 @@ import { Article } from './article';
   providedIn: 'root'
 })
 export class ArticleService {
-  // serverUrl = "https://localhost:8000/";
-  serverUrl = "https://crochet-du-hamster.fr";
   constructor(private http: HttpClient) { }
 
   getArticles(): Observable<Article[]> {
-    return this.http.get<Article[]>(this.serverUrl+"/articles");
+    return this.http.get<Article[]>(environment.serverUrl+"/articles");
   }
 
   getArticle(id: number): Observable<Article> {
-    return this.http.get<Article>(this.serverUrl+"/articles/" + id);
+    return this.http.get<Article>(environment.serverUrl+"/articles/" + id);
   }
 
   getMatiereEtCategorie(): Observable<any> {
-    return this.http.get<any>(this.serverUrl+'/matCat/');
+    return this.http.get<any>(environment.serverUrl+'/matCat/');
   }
 
   postArticle(article: any): Observable<any> {
-    return this.http.post<any>(this.serverUrl+'/ajout', article)
+    return this.http.post<any>(environment.serverUrl+'/ajout', article)
+  }
+
+  modifArticle(article: any, id: number): Observable<any> {
+    return this.http.post<any>(environment.serverUrl+'/modif/'+id, article)
   }
 
   supprArticle(id: number): Observable<any> {
-    return this.http.get<any>(this.serverUrl+'/suppr/'+id)
+    return this.http.get<any>(environment.serverUrl+'/suppr/'+id)
   }
 }

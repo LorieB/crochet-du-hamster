@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Article } from '../article';
 import { ArticleService } from '../article.service';
 import { ToasterService } from '../toaster.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-administration',
@@ -11,6 +12,8 @@ import { ToasterService } from '../toaster.service';
 export class AdministrationComponent implements OnInit {
 
   listeArticles: Article[];
+  articleSelect: Article;
+  baseUrlImg = environment.imageUrl;
 
   constructor(
     private articleService: ArticleService,
@@ -38,5 +41,13 @@ export class AdministrationComponent implements OnInit {
         });;
       this.getArticles();
     }
+  }
+
+  modifierArticle(article: Article): void {
+    this.articleSelect = article;
+  }
+
+  annulerModif(): void {
+    this.articleSelect = null;
   }
 } 

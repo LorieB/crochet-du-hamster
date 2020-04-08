@@ -2,13 +2,12 @@ import { Injectable } from '@angular/core';
 import { Utilisateur } from './utilisateur';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  // serverUrl: string = 'http://localhost:8000';
-  serverUrl: string = 'https://crochet-du-hamster.fr';
   headers = new HttpHeaders().set('Content-Type', 'application/json');
 
   constructor(
@@ -18,7 +17,7 @@ export class AuthService {
 
 
   signIn(utilisateur: Utilisateur) {
-    return this.http.post<any>(`${this.serverUrl}/connexion`, utilisateur);
+    return this.http.post<any>(`${environment.serverUrl}/connexion`, utilisateur);
   }
 
   getToken() {

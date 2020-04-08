@@ -5,10 +5,12 @@ export interface Article{
     
     
     matiere: string[]; //cotton / acrylique / laine ...
+    matiereID: number[];
     categorie: string; //Animal / Perso / ...
+    categorieID: number;
     porteClef: boolean;
 
-    dispo: String; //Oui / Non / Sur commande
+    dispo: string; //1 = Oui / 2 = Non / 3 = Sur commande
     prix: number;
 
     image: string[];

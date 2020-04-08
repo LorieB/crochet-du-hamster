@@ -24,7 +24,7 @@
                         <div class="card">
                             <div class="row no-gutters">
                                 <div class="col-md-3">
-                                    <img src="{{article.image[0]}}">
+                                    <img src="{{baseUrlImg}}{{article.image[0]}}">
                                 </div>
                                 <div class="col-md-6">
                                     <div class="card-body">
@@ -33,7 +33,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-3 d-flex align-items-center justify-content-around">
-                                    <button class="btn btn-outline-secondary"><img src="../assets/icon/edit-2.svg"
+                                    <button (click)="modifierArticle(article)" class="btn btn-outline-secondary"><img src="../assets/icon/edit-2.svg"
                                             alt="edition"></button>
                                     <button (click)="supprimerArticle(article.id)" class="btn btn-outline-danger"><img
                                             src="../assets/icon/x.svg" alt="supprimer"></button>
@@ -43,7 +43,9 @@
                     </div>
                 </div>
 
-
+                <app-form-article *ngIf="articleSelect" [articleAModifier]="articleSelect"></app-form-article>
+                <button *ngIf="articleSelect" (click)="annulerModif()" class="btn btn-outline-danger">Annuler</button>
+                
             </div>
         </div>
     </div>

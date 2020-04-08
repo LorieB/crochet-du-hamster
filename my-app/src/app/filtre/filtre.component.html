@@ -1,0 +1,59 @@
+<div class="btn-group">
+    <button class="btn btn-secondary btn-filtre dropdown-toggle" id="dropdown" data-toggle="dropdown" aria-haspopup="true"
+        aria-expanded="true">Tri</button>
+    <div class="dropdown-menu" aria-labelledby="dropdown">
+        <a (click)="tri({param: 'dateCreation', plusAmoins: true})" class="dropdown-item" href="#">Date + au - recent</a>
+        <a (click)="tri({param: 'dateCreation', plusAmoins: false})" class="dropdown-item" href="#">Date - au + recent</a>
+        <a (click)="tri({param: 'prix', plusAmoins: true})" class="dropdown-item" href="#">Prix + au - cher</a>
+        <a (click)="tri({param: 'prix', plusAmoins: false})" class="dropdown-item" href="#">Prix - au + cher</a>
+    </div>
+</div>
+
+
+<button class="btn btn-secondary btn-filtre dropdown-toggle mx-2" data-toggle="collapse" data-target="#collapseFiltre"
+    aria-expanded="false" aria-controls="collapseFiltre">Filtre</button>
+
+
+<div class="collapse" id="collapseFiltre">
+    <div class="card bg-light">
+        <div class="card-body">
+
+            <form [formGroup]="filtreForm" (ngSubmit)="listeFiltres()" class="row">
+                <div class="col-sm my-auto">
+                    <label for="prix">Prix max :
+                        <span> {{ filtreForm.value.prix }}</span>
+                        <span *ngIf="filtreForm.value.prix != null ">€ <button class="close ml-4" aria-label="Close"
+                                (click)="resetPrix()"><span aria-hidden="true">&times;</span></button></span>
+                    </label>
+                    <input type="range" formControlName="prix" id="prix" class="custom-range">
+                </div>
+                <div class="col-sm my-auto">
+                    <label for="categorie">Categorie</label>
+                    <select formControlName="categorie" id="categorie" class="form-control">
+                        <option></option>
+                        <option *ngFor="let cat of categorie">{{cat.nom}}</option>
+                    </select>
+                </div>
+                <div class="col-sm my-auto">
+                    <label for="matiere">Matière</label>
+                    <select formControlName="matiere" id="matiere" class="form-control">
+                        <option></option>
+                        <option *ngFor="let mat of matiere">{{mat.nom}}</option>
+                    </select>
+                </div>
+                <div class="col-sm my-auto">
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" formControlName="porteClef" id="porteClef" class="custom-control-input"
+                            value=false>
+                        <label class="custom-control-label" for="porteClef">Porte clef</label>
+                    </div>
+                </div>
+                <div class="col-sm-2 my-auto">
+                    <button type="submit" class="btn btn-primary btn-block">Valider</button>
+                    <button type="reset" (click)="supprFiltres()" class="btn btn-secondary btn-block">Supprimer</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>

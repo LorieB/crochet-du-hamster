@@ -20,6 +20,7 @@ import { FormArticleComponent } from './form-article/form-article.component';
 import { ToasterContainerComponent } from './toaster/toaster-container.component';
 import { ToasterComponent } from './toaster/toaster.component';
 import { FooterComponent } from './footer/footer.component';
+import { FiltreComponent } from './filtre/filtre.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import { FooterComponent } from './footer/footer.component';
     FormArticleComponent,
     ToasterContainerComponent,
     ToasterComponent,
-    FooterComponent
+    FooterComponent,
+    FiltreComponent
   ],
   imports: [
     BrowserModule,

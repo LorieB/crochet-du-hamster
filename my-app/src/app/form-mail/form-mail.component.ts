@@ -12,8 +12,8 @@ export class FormMailComponent implements OnInit {
   mailForm: FormGroup;
   model = {expediteur: '', sujet: '', message: ''};
   
-  // serverUrl = "https://localhost:8000/";
-  serverUrl = "https://crochet-du-hamster.fr";
+  serverUrl = "http://localhost:8000";
+  // serverUrl = "https://crochet-du-hamster.fr";
 
   constructor(
     private http: HttpClient,

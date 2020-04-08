@@ -36,30 +36,29 @@
             </div>
             <!-- Porte clef -->
             <div class="form-group">
-                <div class="custom-control custom-switch">
-                    <input type="checkbox" formControlName="porteClef" class="custom-control-input" value=""
-                        id="porteClef">
-                    <label class="custom-control-label" for="porteClef">Porte clef</label>
-                </div>
+                <label class="noselect">
+                    <input type="checkbox" formControlName="porteClef" id="porteClef">
+                    Porte clef
+                </label>
             </div>
             <!-- Disponibilité -->
             <fieldset class="form-group">
                 <legend>Disponible</legend>
-                <div class="custom-control custom-radio custom-control-inline">
-                    <input type="radio" formControlName="dispo" class="custom-control-input" name="dispo" id="dispoOui"
-                        value="1">
-                    <label class="custom-control-label" for="dispoOui">Oui</label>
-                </div>
-                <div class="custom-control custom-radio custom-control-inline">
-                    <input type="radio" formControlName="dispo" class="custom-control-input" name="dispo" id="dispoNon"
-                        value="2">
-                    <label class="custom-control-label" for="dispoNon">Non</label>
-                </div>
-                <div class="custom-control custom-radio custom-control-inline">
-                    <input type="radio" formControlName="dispo" class="custom-control-input" name="dispo"
-                        id="dispoCommande" value="3">
-                    <label class="custom-control-label" for="dispoCommande">Sur commande</label>
-                </div>
+                    <label class="noselect">
+                        <input type="radio" formControlName="dispo"  name="dispo" id="dispoOui"
+                            value="1">
+                        Oui
+                    </label> 
+                    <label class="noselect mx-4">
+                        <input type="radio" formControlName="dispo"  name="dispo" id="dispoNon"
+                            value="2">
+                        Non
+                    </label>
+                    <label class="noselect">
+                        <input type="radio" formControlName="dispo"  name="dispo"
+                            id="dispoCommande" value="3">
+                        Sur commande
+                    </label>
             </fieldset>
             <!-- Prix -->
             <div class="form-group">
@@ -75,26 +74,34 @@
         </div>
         <!-- Images / Description images -->
         <div class="col-md">
-                <div class="form-group ">
-                    <label>Images</label>
-                    <div class="custom-file">
-                        <input (change)="detectFiles($event)" type="file" multiple class="custom-file-input"
-                            id="images">
-                        <label class="custom-file-label" for="images"></label>
-                    </div>
+            <div class="form-group ">
+                <label>Images</label>
+                <div class="custom-file">
+                    <input (change)="detectFiles($event)" type="file" multiple class="custom-file-input" id="images">
+                    <label class="custom-file-label" for="images"></label>
                 </div>
-                <div formArrayName="imagesBDD" *ngFor="let image of images; let i = index;">
-                    <div [formGroupName]="i" class="form-group row">
-                        <img [src]="image" class="col-4">
-                        <div class="col-8">
-                            <input type="text" readonly class="form-control-plaintext" formControlName="nomImg" hidden>
-                            <textarea formControlName="descriptionImg" class="form-control"></textarea>
-                        </div>
+            </div>
+            <div formArrayName="imagesBDD" *ngFor="let image of images; let i = index;">
+                <div [formGroupName]="i" class="form-group row">
+                    <img [src]="image" class="col-4">
+                    <div class="col-8">
+                        <input type="text" readonly class="form-control-plaintext" formControlName="nomImg" hidden>
+                        <textarea formControlName="descriptionImg" class="form-control"></textarea>
                     </div>
                 </div>
             </div>
+
+            <div *ngIf="articleAModifier">
+                <div *ngFor="let image of articleAModifier.image; let i = index"  class="form-group row">
+                    <img src="{{baseUrlImg}}{{image}}" class="col-8">
+                    <button *ngIf="imgSuppr.indexOf(image) == -1" (click)="supprimerImage(image)" type="button" class="col-2 offset-1 close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <button *ngIf="imgSuppr.indexOf(image) > -1" (click)="annulerSupprimerImage(image)" type="button" class="col-2 offset-1 close" aria-label="Close"><span aria-hidden="true"><-</span></button>
+                </div>
+            </div>
+
         </div>
-        <div class="row justify-content-center">
-            <button type="submit" [disabled]="!articleForm.valid" class="btn btn-outline-dark btn-lg ">Valider</button>
-        </div>
+    </div>
+    <div class="row justify-content-center">
+        <button type="submit" [disabled]="!articleForm.valid" class="btn btn-outline-dark btn-lg ">Valider</button>
+    </div>
 </form>

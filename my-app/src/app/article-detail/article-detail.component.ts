@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { environment } from '../../environments/environment';
 
 import { Article } from '../article';
 import { ArticleService } from '../article.service';
@@ -11,7 +12,8 @@ import { ArticleService } from '../article.service';
 })
 export class ArticleDetailComponent implements OnInit {
 
-  article: Article = {id: 0 ,titre: '',texte: '',image: [''],descriptionImg: [''],matiere: [''], categorie:'', porteClef: null, dispo: '', prix: null, dateCreation: null};
+  article: Article = {id: 0 ,titre: '',texte: '',image: [''],descriptionImg: [''],matiere: [''], categorie:'', porteClef: null, dispo: '', prix: null, dateCreation: null, matiereID: null, categorieID: null}; 
+  baseUrlImg = environment.imageUrl;
 
   constructor(
     private route: ActivatedRoute,

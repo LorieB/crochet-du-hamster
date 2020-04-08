@@ -8,7 +8,7 @@
                     <div class="carousel-inner">
                         <div *ngFor="let img of article.image; let i=index "
                             class="carousel-item {{ (i==0) ?'active':'' }}">
-                            <img src="{{img}}" class="d-block w-100" alt="{{ article.descriptionImg[i] }}">
+                            <img src="{{baseUrlImg}}{{img}}" class="d-block w-100" alt="{{ article.descriptionImg[i] }}">
                         </div>
                     </div>
 
@@ -30,7 +30,7 @@
                             class="list-inline-item {{ (i==0)?'active':''}}">
                             <a id="carousel-selector-{{ i }}" class="{{ (i==0)?'selected':''}}"
                                 data-target="#carouselDetailArticle" [attr.data-slide-to]="i">
-                                <img src="{{ img }}" class="img-fluid" alt="{{ article.descriptionImg[i] }}">
+                                <img src="{{baseUrlImg}}{{ img }}" class="img-fluid" alt="{{ article.descriptionImg[i] }}">
                             </a>
                         </li>
                     </ul>

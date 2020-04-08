@@ -1,5 +1,9 @@
-<div class="row row-cols-1 row-cols-md-3">
-    <div class="col mb-4" *ngFor="let art of articles">
+
+<app-filtre (eventFiltre)="filtrerArticles($event)" (eventSupprFiltre)="supprFiltre()" (eventTri)="tri($event)"></app-filtre>
+
+
+<div class="row row-cols-1 row-cols-md-3 mt-2">
+    <div class="col mb-4" *ngFor="let art of articlesAffiches">
         <div class="card h-100">
 
             <!-- Carousel du tableau d'images et des descriptions
@@ -8,7 +12,7 @@
             <div id="carouselArticle{{art.id}}" class="carousel slide card-img-top" data-ride="carousel" data-interval=false>
                 <div class="carousel-inner">
                     <div *ngFor="let img of art.image; let i=index " class="carousel-item {{ (i==0) ?'active':'' }}">
-                        <img src="{{img}}" class="d-block w-100" alt="{{ art.descriptionImg[i] }}">
+                        <img src="{{baseUrlImg}}{{img}}" class="d-block w-100" alt="{{ art.descriptionImg[i] }}">
                     </div>
                 </div>
                 
