@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ToasterService } from '../toaster.service';
+import { ToasterService } from '../_services/toaster.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { environment } from '../../environments/environment';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-form-mail',
@@ -9,11 +11,10 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
   styleUrls: ['./form-mail.component.css']
 })
 export class FormMailComponent implements OnInit {
+  private subscription: Subscription;
+
   mailForm: FormGroup;
   model = {expediteur: '', sujet: '', message: ''};
-  
-  serverUrl = "http://localhost:8000";
-  // serverUrl = "https://crochet-du-hamster.fr";
 
   constructor(
     private http: HttpClient,
@@ -30,7 +31,7 @@ export class FormMailComponent implements OnInit {
   }
 
   onSubmit(): void {
-    this.http.post(`${this.serverUrl}/contact`, this.mailForm.value).subscribe(
+    this.subscription = this.http.post(`${environment.serverUrl}/contact`, this.mailForm.value).subscribe(
       (response) => {
         this.toaster.show('success', 'Mail envoyé !');
       },
@@ -38,5 +39,12 @@ export class FormMailComponent implements OnInit {
         this.toaster.show('danger', "Echec de l'envoie du mail");
       }
     );
+  }
+
+  
+  ngOnDestroy(){
+    if(this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 }

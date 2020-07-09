@@ -8,7 +8,8 @@
       <a class="nav-item nav-link" routerLink="/articles" routerLinkActive="active">Accueil<span class="sr-only">(current)</span></a>
       <a class="nav-item nav-link" routerLink="/faq" routerLinkActive="active">FAQ</a>
       <a class="nav-item nav-link" routerLink="/contact" routerLinkActive="active">Contact</a>
+      <a *ngIf="isLoggedIn" class="nav-item nav-link" routerLink="/administration" routerLinkActive="active">Administration</a>
     </div>
   </div>
-  <button class="btn btn-outline-warning" (click)="deconnexion()" *ngIf="this.authService.isLoggedIn">Déconnexion</button>
+  <button class="btn btn-outline-warning" (click)="deconnexion()" *ngIf="isLoggedIn">Déconnexion</button>
 </nav>

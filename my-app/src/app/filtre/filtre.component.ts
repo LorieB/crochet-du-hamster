@@ -1,6 +1,7 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ArticleService } from '../article.service';
+import { ArticleService } from '../_services/article.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-filtre',
@@ -8,6 +9,7 @@ import { ArticleService } from '../article.service';
   styleUrls: ['./filtre.component.css']
 })
 export class FiltreComponent implements OnInit {
+  private subscription: Subscription;
 
   @Output() eventTri = new EventEmitter<object>();
   @Output() eventFiltre = new EventEmitter<object>();
@@ -47,7 +49,7 @@ export class FiltreComponent implements OnInit {
   }
 
   listeMatCat(): void {
-    this.articleService.getMatiereEtCategorie().subscribe(response => {
+    this.subscription = this.articleService.getMatiereEtCategorie().subscribe(response => {
       this.matiere = response[0];
       this.categorie = response[1];
     })
@@ -55,5 +57,9 @@ export class FiltreComponent implements OnInit {
 
   resetPrix(): void {
     this.filtreForm.value.prix = null;
+  }
+  
+  ngOnDestroy(){
+    this.subscription.unsubscribe();
   }
 }

@@ -1,7 +1,8 @@
 <app-toaster-container></app-toaster-container>
 <div class="card col-4 offset-4">
     <div class="card-body">
-        <form (ngSubmit)="onSubmit()" [formGroup]="connexionForm" class="form-signin">
+
+        <form *ngIf="!isLoggedIn" (ngSubmit)="onSubmit()" [formGroup]="connexionForm" class="form-signin">
             <div class="form-group">
                 <label for="nom">Nom</label>
                 <input type="text" class="form-control" id="nom" formControlName="nom" required>
@@ -13,5 +14,11 @@
 
             <button type="submit" class="btn btn-dark" [disabled]="connexionForm.invalid">Connexion</button>
         </form>
+
+
+        <div class="text-center" *ngIf="isLoggedIn">
+            Connecté
+        </div>
+
     </div>
 </div>

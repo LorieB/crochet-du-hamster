@@ -7,7 +7,7 @@ import { FaqComponent } from './faq/faq.component';
 import { ContactComponent } from './contact/contact.component';
 import { ConnexionComponent } from './connexion/connexion.component';
 import { AdministrationComponent } from './administration/administration.component';
-import { AuthGuard } from './auth.guard';
+import { AuthGuard } from './_auth/auth.guard';
 
 const routes: Routes = [
   { path: '', redirectTo: '/articles', pathMatch: 'full'},

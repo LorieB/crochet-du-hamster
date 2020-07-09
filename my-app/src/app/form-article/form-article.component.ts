@@ -1,10 +1,11 @@
 import { Component, OnInit, Input, SimpleChange, Output } from '@angular/core';
 import { FormBuilder, FormArray, FormGroup, Validators } from '@angular/forms'
-import { ArticleService } from '../article.service';
-import { ToasterService } from '../toaster.service';
-import { UploadService } from '../upload.service';
-import { Article } from '../article';
+import { ArticleService } from '../_services/article.service';
+import { ToasterService } from '../_services/toaster.service';
+import { UploadService } from '../_services/upload.service';
+import { Article } from '../_share/article';
 import { environment } from '../../environments/environment';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-form-article',
@@ -12,6 +13,8 @@ import { environment } from '../../environments/environment';
   styleUrls: ['./form-article.component.css']
 })
 export class FormArticleComponent implements OnInit {
+  private subscription: Subscription = new Subscription();
+
   @Input() articleAModifier: Article;
  
   baseUrlImg = environment.imageUrl;
@@ -70,10 +73,10 @@ export class FormArticleComponent implements OnInit {
 
   /* Récupère les listes de matières et categories pour les mettre dans les <select> du formulaire */
   getMatCat() {
-    this.artService.getMatiereEtCategorie().subscribe(response => {
+    this.subscription.add(this.artService.getMatiereEtCategorie().subscribe(response => {
       this.matieres = response[0];
       this.categories = response[1];
-    })
+    }))
   }
 
   createItem(nom: String): FormGroup {
@@ -119,35 +122,37 @@ export class FormArticleComponent implements OnInit {
       }
     }
   }
-
+ 
   onSubmit() {
     if (this.articleAModifier) {
       this.articleForm.get('imagesSuppr').setValue(this.imgSuppr);
-      this.artService.modifArticle(this.articleForm.value, this.articleAModifier.id).subscribe(
+      this.subscription.add(this.artService.modifArticle(this.articleForm.value, this.articleAModifier.id).subscribe(
         (response) => {
           this.toaster.show('success', 'Modification réussi');
         },
         (error) => {
-          this.toaster.show('danger', 'Une erreur est survenue à la modification');
-        });
+          this.toaster.show('danger', error.error.message);
+        }));
     }
     else {
-      this.artService.postArticle(this.articleForm.value).subscribe(
+      this.subscription.add(this.artService.postArticle(this.articleForm.value).subscribe(
         (response) => {
           this.toaster.show('success', 'Ajout réussi');
         },
         (error) => {
-          this.toaster.show('danger', 'Une erreur est survenue');
-        });
+          this.toaster.show('danger', error.error.message);
+        }));
     }
 
     if (this.articleForm.value.imagesBDD.length > 0) {
-      this.uploadService.upload(this.formData).subscribe(
+      this.subscription.add(this.uploadService.upload(this.formData).subscribe(
         (res) => {
           if (res == null) this.toaster.show('success', "Upload des images réussi");
         },
-        (err) => { this.toaster.show('danger', "Une erreur est survenue lors de l'upload des images") }
-      );
+        (err) => { 
+          this.toaster.show('danger', err.error.message);
+        }
+      ));
     }
   }
 
@@ -161,6 +166,12 @@ export class FormArticleComponent implements OnInit {
 
   annulerSupprimerImage(image: string): void{
     this.imgSuppr.splice(this.imgSuppr.indexOf(image), 1);
+  }
+
+
+  
+  ngOnDestroy(){
+    this.subscription.unsubscribe();
   }
 }
 

@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { Article } from '../article';
-import { ArticleService } from '../article.service'
+import { Article } from '../_share/article';
+import { ArticleService } from '../_services/article.service'
 import { environment } from '../../environments/environment';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-article',
@@ -9,6 +10,7 @@ import { environment } from '../../environments/environment';
   styleUrls: ['./article.component.css']
 })
 export class ArticleComponent implements OnInit {
+  private subscription: Subscription;
 
   listeArticles: Article[];
   articlesAffiches: Article[];
@@ -24,7 +26,7 @@ export class ArticleComponent implements OnInit {
 
 
   getArticles():void {
-    this.articleService.getArticles().subscribe(articles => {
+    this.subscription = this.articleService.getArticles().subscribe(articles => {
       for(let art of articles){
         art.dateCreation = new Date(art.dateCreation);
       }
@@ -66,4 +68,8 @@ export class ArticleComponent implements OnInit {
     });
   }
 
+  
+  ngOnDestroy(){
+    this.subscription.unsubscribe();
+  }
 }

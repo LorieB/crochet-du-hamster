@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Article } from '../article';
-import { ArticleService } from '../article.service';
-import { ToasterService } from '../toaster.service';
+import { Article } from '../_share/article';
+import { ArticleService } from '../_services/article.service';
+import { ToasterService } from '../_services/toaster.service';
 import { environment } from '../../environments/environment';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-administration',
@@ -10,10 +11,13 @@ import { environment } from '../../environments/environment';
   styleUrls: ['./administration.component.css']
 })
 export class AdministrationComponent implements OnInit {
+  private subscription: Subscription = new Subscription();
 
   listeArticles: Article[];
   articleSelect: Article;
   baseUrlImg = environment.imageUrl;
+
+  idASuppr = null;
 
   constructor(
     private articleService: ArticleService,
@@ -25,22 +29,24 @@ export class AdministrationComponent implements OnInit {
   }
 
   getArticles(): void {
-    this.articleService.getArticles().subscribe(articles => {
+    this.subscription.add(this.articleService.getArticles().subscribe(articles => {
       this.listeArticles = articles;
-    });
+    }));
   }
 
-  supprimerArticle(id: number){
-    if(confirm("Supprimer ?")) {
-      this.articleService.supprArticle(id).subscribe(
-        (response)=>{
-          this.toaster.show('success', 'suppression réalisée avec succes');
-        },
-        (error)=>{
-          this.toaster.show('danger', 'Une erreur est survenue');
-        });;
-      this.getArticles();
-    }
+  selectSupprArticle(id: number): void {
+    this.idASuppr = id;
+  }
+
+  supprimerArticle() {
+    this.subscription.add(this.articleService.supprArticle(this.idASuppr).subscribe(
+      (response) => {
+        this.toaster.show('success', 'suppression réalisée avec succes');
+        this.getArticles();
+      },
+      (error) => {
+        this.toaster.show('danger', error.error.message);
+      }));
   }
 
   modifierArticle(article: Article): void {
@@ -49,5 +55,10 @@ export class AdministrationComponent implements OnInit {
 
   annulerModif(): void {
     this.articleSelect = null;
+  }
+
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 } 

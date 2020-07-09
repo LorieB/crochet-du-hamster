@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -8,13 +9,19 @@ import { Router, NavigationEnd } from '@angular/router';
 })
 export class AppComponent {
   title = 'Crochet-du-hamster';
+  private subscription: Subscription;
 
   constructor(private router: Router) {
-    this.router.events.subscribe(event => {
+    this.subscription = this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         (<any>window).ga('set', 'page', event.urlAfterRedirects);
         (<any>window).ga('send', 'pageview');
       }
     });
+  }
+
+  
+  ngOnDestroy(){
+    this.subscription.unsubscribe();
   }
 }

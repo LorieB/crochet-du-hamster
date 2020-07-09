@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le :  Dim 05 avr. 2020 à 14:00
+-- Généré le :  jeu. 09 juil. 2020 à 12:16
 -- Version du serveur :  10.4.10-MariaDB
 -- Version de PHP :  7.3.12
 
@@ -100,15 +100,40 @@ CREATE TABLE IF NOT EXISTS `matiere` (
 -- --------------------------------------------------------
 
 --
--- Structure de la table `utilisateurs`
+-- Structure de la table `roles`
 --
 
-DROP TABLE IF EXISTS `utilisateurs`;
-CREATE TABLE IF NOT EXISTS `utilisateurs` (
+DROP TABLE IF EXISTS `roles`;
+CREATE TABLE IF NOT EXISTS `roles` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nom` varchar(50) NOT NULL,
-  `mdp` varchar(50) NOT NULL,
+  `name` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `users`
+--
+
+DROP TABLE IF EXISTS `users`;
+CREATE TABLE IF NOT EXISTS `users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `user_roles`
+--
+
+DROP TABLE IF EXISTS `user_roles`;
+CREATE TABLE IF NOT EXISTS `user_roles` (
+  `roleId` int(11) NOT NULL,
+  `userId` int(11) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 COMMIT;
 

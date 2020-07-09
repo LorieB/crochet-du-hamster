@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../auth.service';
+import { TokenStorageService } from '../_auth/token-storage.service';
 
 @Component({
   selector: 'app-menu',
@@ -8,14 +8,20 @@ import { AuthService } from '../auth.service';
 })
 export class MenuComponent implements OnInit {
 
+  isLoggedIn = false;
+
+
   constructor(
-    public authService: AuthService
+    private tokenStorageService: TokenStorageService
   ) { }
 
+  
   ngOnInit(): void {
+    this.isLoggedIn = !!this.tokenStorageService.getToken();
   }
 
   deconnexion() {
-    this.authService.doLogout();
+    this.tokenStorageService.signOut();
+    window.location.reload();
   }
 }
